@@ -8,5 +8,4 @@ class User:
     email: str
     password: str
     is_admin: bool
-    created_at: str
-    updated_at: str
+    bio: str

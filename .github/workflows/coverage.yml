@@ -1,0 +1,58 @@
+name: Coverage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests with coverage
+        run: PYTHONPATH=. pytest --cov=server --cov-report=term --cov-report=xml:cobertura.xml tests
+
+      - name: Upload coverage artifact
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-report
+          path: cobertura.xml
+
+  # Separate job with minimal permissions for the coverage upload.
+  # Skipped for fork PRs since the artifact won't be uploaded.
+  upload-coverage:
+    needs: build
+    if: ${{ !cancelled() && needs.build.result == 'success' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # TODO: Reduce to `code-quality: write` once that permission scope ships.
+      security-events: write
+    steps:
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cobertura-report
+
+      - name: Upload coverage report
+        uses: code-quality-org/upload-code-coverage-action@main
+        with:
+          file: cobertura.xml
+          language: Python
+          label: code-coverage/pytest
