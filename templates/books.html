@@ -2,16 +2,170 @@
 <html lang="en">
 
 <head>
-    <title>Book Store</title>
+    <meta charset="utf-8">
+    <title>PageTurner Library Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+            color: #222;
+            background: #f7f7f4;
+        }
+
+        header,
+        section {
+            max-width: 980px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #d9d9d2;
+            border-radius: 6px;
+            padding: 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+        }
+
+        input,
+        textarea,
+        button {
+            font: inherit;
+            padding: .5rem;
+            margin: .2rem 0;
+            max-width: 100%;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+        }
+
+        th,
+        td {
+            padding: .65rem;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        code {
+            background: #eee;
+            padding: .1rem .25rem;
+            border-radius: 3px;
+        }
+
+        .muted {
+            color: #606060;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Book Store</h1>
-    <ul id="books">
-        {% for book in books %}
-        <li>{{ book.name }} by {{ book.author }}</li>
+    <header>
+        <h1>PageTurner Library Admin</h1>
+        <p class="muted">Signed in as {{ current_user or "guest" }}. Demo accounts: admin/admin123 and morgan/books2026.
+        </p>
+    </header>
+
+    <section class="grid">
+        <form class="panel" action="/" method="get">
+            <h2>Search Catalog</h2>
+            <label>Keyword
+                <input name="q" placeholder="title or author">
+            </label>
+            <label>Genre
+                <input name="genre" placeholder="science fiction">
+            </label>
+            <button type="submit">Search</button>
+        </form>
+
+        <form class="panel" action="/login" method="post">
+            <h2>Staff Login</h2>
+            <label>Username
+                <input name="username" autocomplete="username">
+            </label>
+            <label>Password
+                <input name="password" type="password" autocomplete="current-password">
+            </label>
+            <button type="submit">Sign in</button>
+        </form>
+    </section>
+
+    <section class="panel">
+        <h2>Catalog</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Genre</th>
+                    <th>Read</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td>{{ book.name }}</td>
+                    <td>{{ book.author }}</td>
+                    <td>{{ book.genre }}</td>
+                    <td>{{ book.read }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="grid">
+        <form class="panel" action="/books" method="post">
+            <h2>Add Book</h2>
+            <input name="name" placeholder="Title">
+            <input name="author" placeholder="Author">
+            <input name="genre" placeholder="Genre">
+            <label><input name="read" type="checkbox"> Already read</label>
+            <button type="submit">Add</button>
+        </form>
+
+        <form class="panel" action="/reviews" method="post">
+            <h2>Add Review</h2>
+            <input name="book_id" placeholder="Book ID" value="1">
+            <input name="username" placeholder="Reviewer" value="guest">
+            <textarea name="body" placeholder="Discussion note"></textarea>
+            <button type="submit">Post review</button>
+        </form>
+    </section>
+
+    <section class="panel">
+        <h2>Recent Reviews</h2>
+        {% for review in reviews %}
+        <article>
+            <strong>{{ review.username }}</strong> on book {{ review.book_id }}:
+            <div>{{ review.body|safe }}</div>
+        </article>
         {% endfor %}
-    </ul>
+    </section>
+
+    <section class="panel">
+        <h2>Staff Tools</h2>
+        <p><a href="/profile/riley">View Riley's profile</a></p>
+        <p><a href="/documents">List shared documents</a></p>
+        <p><a href="/download?file=welcome.txt">Download welcome document</a></p>
+        <p><a href="/diagnostics?host=127.0.0.1">Run network diagnostics</a></p>
+        <p><a href="/reports/activity">Download activity report</a></p>
+        <p><a href="/api/settings">View feature settings</a></p>
+        {% if diagnostics_enabled %}<p><code>diagnostics</code> flag is enabled.</p>{% endif %}
+    </section>
 </body>
 
 </html>
