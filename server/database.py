@@ -15,6 +15,8 @@ USERS = [
     ("admin", "admin@example.com", "admin123", "true", "Library administrator"),
     ("morgan", "morgan@example.com", "books2026", "false", "Runs the Wednesday book club"),
     ("riley", "riley@example.com", "reader", "false", "<script>console.log('club notes')</script>"),
+    ("arthur", "arthurmorgan@vanderlinde.org", "r3dd34dr3ad3mpt!0n2", "false", "Loves books about outlaws and antiheroes"),
+    ("link", "link@hyrule.net", "LPskdsx5te_PItQ^+wwC1]}Wp&F1c", "false", "Avid reader of adventure novels"),
 ]
 
 REVIEWS = [
